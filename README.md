@@ -1,10 +1,9 @@
-# League of Legend Large Neutral Monster Analysis
 #### Ziheng Tang, December 2025
 
-## Introduction
+# Introduction
 This is a report about the statistics of large neutral monsters on the final result on the game. The main question to explore here is: Can we predict a winning team just by looking at some combinations of the large neutral monsters data? This report contains a great model that can predict wins given just the large neutral monsters statistics. The accuracy of the model is 92%. The data precessing phase will also showcase the importance of some of the statistics, to see hwich ones are more influencial to the final win. Other related questions that will be explored are: What are some interesting traits of the data for the large neutral monsters (atakhans, barons, dragons, and such)? And is the win rate the same for both blue team and red team?
 
-#### About the dataset
+### About the dataset
 The dataset that the model was trained on was the official esports match data from OraclesElixir, from 2025. It contains the end game statistics for random games during 2025, both for a single player and a team. There are a total of 118932 rows, 99110 rows of single player data and 19822 rows of team data. This report will focus on data for a whole team.
 This dataset contains the information similar to the Results Screen after each game. Most columns in this dataset are useless to us. Only these columns are going to be considered:
  - `gameid`: the id for which game this data is collected from.
@@ -32,7 +31,7 @@ This dataset contains the information similar to the Results Screen after each g
  - `position`: 'team' for team data.
  - `side`: which side this data was obtained from. Containing values: ['blue', 'red']
 
-## Data Cleaning
+# Data Cleaning
 
 1. Extracted only the team data.
 2. Extracted only the columns listed above.
