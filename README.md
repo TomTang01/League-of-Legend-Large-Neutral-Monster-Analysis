@@ -52,7 +52,7 @@ The head of the final dataset I will use looks like this:
 | LOLTMNT06_95160  | Blue   | True               |             0 |         0 |             4 |                 0 |                     4 |        0 |            0 |         0 |             1 |            2 |                4 |            0 |        0 |            1 |          0 |              1 |        0 |
 ```
 
-# Data Analysis
+# Exploratory Data Analysis
 
 ## Univariate Analysis
 
@@ -119,6 +119,16 @@ Let's take a step back and look at the win rate for all the large neutral monste
 ></iframe>
 
 'Killed less' means that the team killed less of this monster in this game than the opponent team. 'Killed more' means that the team killed more of this monster in this game than the opponent team. And 'killed the same' means that the two teams killed the same amount. Most columns seem reasonable, with 'killed more' having the highest win rates. The exception is still the `'elders'` column. However, as we have explored before, this is just due to the harsh spawn requirements for elders.
+Here is a table of the win rate version of the same data:
+```markdown
+|                 |   dragons win rate |   elementaldrakes win rate |   elders win rate |   heralds win rate |   void_grubs win rate |   atakhans win rate |   barons win rate |
+|:----------------|-------------------:|---------------------------:|------------------:|-------------------:|----------------------:|--------------------:|------------------:|
+| killed less     |           0.145192 |                   0.218041 |         0.0914136 |         0.336697   |              0.358793 |           0.266976  |         0.0728484 |
+| killed more     |           0.708506 |                   0.649379 |         0.060337  |         0.661185   |              0.536777 |           0.706488  |         0.694582  |
+| killed the same |           0.146302 |                   0.13258  |         0.848249  |         0.00211886 |              0.104429 |           0.0265362 |         0.23257   |
+```
+
+As shown here and the graph above, the biggest difference between the win rate of killing more and killing less is the barons column. This means that barons are very essential and impacts the outcome of the game a lot. This is a column that must be considered as a feature for my models.
 
 ## Interesting Aggregates
 
@@ -276,7 +286,7 @@ When analyzing the dataset, we saw that barely any team killed any elder dragon.
  - `Statistic`: Win rate given more than one elder dragon was killed by the team
  - `alpha`: 0.05
 
-Results: The win rate for at least 1 elder dragon kill is 0.8217592592592593, which is the observed test statistics. The p-value is 0.0, hence we are safe to reject the Null at a significance level of 0.05. ChatGPT is very likely wrong. But it does confirm that my assumption for elder kills are very important for the final win.
+Results: The win rate for at least 1 elder dragon kill is 0.8217592592592593, which is the observed test statistics. The p-value is 0.0, hence we are safe to reject the Null at a significance level of 0.05. ChatGPT is very likely wrong. But it does confirm that my assumption for elder kills are very important for the final win. The `'elders'` column would be an excellent choice for the feature vector for my baseline model.
 
 ### 2. Hypothesis Test for `'side'`
 
@@ -290,7 +300,7 @@ A question that has bugged me for some time is whether the side (Blue or Red) in
 
  Results: The chance of Blue winning is 0.5338512763596004, which is the observed test statistic. The p-value is 0.0, which means that we are safe to reject the Null at a significance level of 0.05. The chance of Blue winning is not 50%. I have confirmed this with the gaming community and it seems that the Blue has a slightly higher win rate of 52%. It seems that the game is not balanced by sides, and I may want to test if my model, later on, is fair for both the Blue team and the Red team.
 
- # The BIG Prediction Problem
+ # Framing a Prediction Problem
 
 The final Prediction problem for this project is simple:
 
@@ -301,5 +311,73 @@ Given statistics of the large neutral monster kills of a team, predict whether t
 
 I am predicting the `'result'` because it is the column that tells whether the team won at the end or not very straight forward. The evaluation metric I am going to use is accuracy. This is because since all data came from both sides of a game, and there must be a win and a lose for each game, the amount of wins are the exact same as the amount of loses. This means that the data is perfectly balanced and accuracy is a valid metric. I will not be prioritizing precision because I have no reason to ignore data with 0 for `'result'`, as precision looks only at `'result'` = 1. I will not be prioritizing recall because I have no reason to ignore my predictions that are 0, as recall looks only at my predictions that are 1. Accuracy is a very balanced evaluation metric that takes all data into account and suits this binary classification problem very much.
 
+The data is split into training data and testing data. All models will have the same training data and testing data for better comparison.
+
 # Baseline Model
 
+The baseline model would be a decision tree that only considers how many more `'barons'` and `'elders'` a team has killed than the opponent team. That is, create 2 new features: 
+  1. `'barons_diff'` = `'barons'` - `'opp_barons'`; 
+  2. `'elders_diff'` = `'elders'` -`'opp_elders'`. 
+Use these 2 column values to determine whether the team wins or not. There is no need for any transformers because both these columns are linear and their scales would not matter for a decision tree. Both the features are discrete columns.
+
+Use GridSearchCV to test out the best hyperparameters for this tree. The hyperparameters considered are:
+```
+hyperparams = {
+    'max_depth' : [2, 4, 8, 16],
+    'min_samples_split' : [100, 1000, 2000],
+    'criterion' : ['gini', 'entropy']
+}
+```
+The best hyperparameter combination is `{'criterion': 'entropy', 'max_depth': 4, 'min_samples_split': 1000} ` and the Best Cross-Validation Accuracy is 0.8183. Using this hyperparameter combination to train the full training data and test on the testing data, the baseline model accuracy on test set is 0.8164. Meaning that the best Decision Tree model with these 2 features correctly predicts the game result 81.64% of the time.
+This is a decent model given its high accuracy. We know from the Aggregates section above, that the win rate for getting more barons than the opponent team is around 70%. And from the hypothesis test done on the `'elders'` column, we know that killing at least one elder has a win rate of over 70%. By combining these feature, we are getting a higher accuracy of an additional 10%, which is decent. But there are so many more features we did not use. By using all these features, we may get an even better accuracy.
+
+# Final Model
+
+The final model would be a Random Forest using all the features of the large neutral monsters statistics. I choose Random Forest because it is more stable and hard to overfit. And since the Decision Tree Baseline Model gives a decent result, making it a forest would be a reasonable step.
+```
+Features: `'firstdragon'`, `'elementaldrakes'`, `'opp_elementaldrakes'`, `'elders'`, `'opp_elders'`, `'heralds'`, `'opp_heralds'`, `'void_grubs'`, `'opp_void_grubs'`, `'firstbaron'`, `'barons'`, `'opp_barons'`, `'atakhans'`, and `'opp_atakhans'`
+```
+
+`'void_grubs'` and `'opp_void_grubs'` will be binarized because, as stated in the data analysis phase, killing 1 or 0 Void Grub will not impact the final win in any way. And killing 2 or above is considered useful but there is no significant difference after 2.
+
+All other columns are quatitative columns and will be standardized just to make the final parameters more interpretable. Some quantitative columns will be skipped because they are more like binary columns, having only 0s and 1s. These includes: `'firstdragon'`, `'heralds'`, `'opp_heralds'`, `'firstbaron'`, `'atakhans'`, and `'opp_atakhans'`.
+
+Since all of these features are in are independent from each other for a team, and all these feature show that killing more would guarentee a more likely win, it is a logical descision to include all these features. Note that I excluded `'dragons'` and `'opp_dragons'` because these 2 columns are dependent on `'elementaldrakes'`, `'opp_elementaldrakes'`, `'elders'`, and `'opp_elders'`. Hence including all six would mean that there are dependent features, which would not help our prediction very well.
+
+1. Transform the columns using the `ColumnTransformer` to binarize and standardize the columns.
+2. Set the hyperparameter choices for GridSearchCV to try:
+  ```
+  hyperparams = {
+    'rf__n_estimators': [10, 50, 100],
+    'rf__max_depth' : [4, 8, 16, 32],
+    'rf__min_samples_split' : [5, 10, 100, 1000],
+    'rf__criterion' : ['gini', 'entropy']
+  }
+  ```
+3. Use GridSearchCV to find the best parameters.
+  - Best Parameters Found: {'rf__criterion': 'entropy', 'rf__max_depth': 16, 'rf__min_samples_split': 10, 'rf__n_estimators': 50}
+  - Best Cross-Validation Score: 0.9277
+4. Use the best hyperparameter combination to train on the full training data and then test on the test set.
+  - Model Accuracy on Test Set: 0.9314
+  - Interpretation: The best All Features Random Forest model correctly predicts the game result 93.14% of the time.
+
+### Conclusion:
+The final model has a test accuracy of 0.9314, which is very high. It is better than the base model because it contains more features, all correlated to the final win result and independent from each other. Also because Random Forests are more robust than a single Decision Tree.
+
+# Fairness Analysis
+
+As we proved in the hypothesis test, the data hints that blue and red teams do not have a even 50/50 chance of winning. Let's see if my All Features Random Forest model is fair enough to have equally accurate predictions for both teams. We will check this by using a permutation test to see if they are from the same distribution.
+
+ - **Null Hypothesis**: Our model is fair. The accuracy for predicting the right result for blue team and red team are roughly the same, and any differences are due to random chance.
+ - **Alternative Hypothesis**: Our model is unfair. The accuracy for predicting the right result for blue team and red team are not the same
+
+ - **Statistic**: abs((percentage of games where Blue was predicted correctly) - (percentage of games where Red was predicted correctly))
+ - **alpha**: 0.05
+ - **Evaluation Metric**: accuracy
+
+I chose accuracy again for the same reason above: I want to get all of my predictions right, not just the predicted wins or just the predicted loses. The total amount of red team data in the test set is 962, and out of these 962 data, there are 438 with actual wins. The total number of blue team data in the test set is 1021, and out of these 1021 data, there are 541 with actual wins. Hence the data is stll balanced and accuracy is a valid metric.
+
+Result: The accuracy of Blue predictions from the model is 0.9324191968658179. The accuracy of Red predictions from the model is 0.9106029106029107. Therefore, we failed to reject the Null, the p-value is 0.0774. The accuracy of blue and red win predictions are very similar. The model is very likely to be fair.
+
+### Conclusion:
+The final All Features Random Forest model acheives accuracy parity.
