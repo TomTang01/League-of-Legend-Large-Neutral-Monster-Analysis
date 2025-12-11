@@ -57,11 +57,10 @@ The head of the final dataset I will use looks like this:
 ## Univariate Analysis
 
 By graphing out all the columns into histograms, it is confirmed that most columns contain reasonable values with reasonable distributions. For example, the graph of the 'dragons' column does seem to agree with the fact that the column is the sum of 'elementaldrakes' and 'elders', as seen below:
-```markdown
+
 <iframe
   src="assets/dragons.html"
   width="800"
   height="600"
   frameborder="0"
 ></iframe>
-```
