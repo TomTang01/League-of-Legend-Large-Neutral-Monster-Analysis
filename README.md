@@ -14,27 +14,27 @@ This dataset contains the information similar to the Results Screen after each g
 4. datacompleteness
 
 We will only use the rows that are team data, and only the columns:
- - for easier to identify each game: `gameid`
- - win result : `result`
+ - `gameid`: the id for which game this data is collected from.
+ - `result`: the win result.
  - neutral monsters :
-   1. `firstdragon`,
-   2. `dragons`,
-   3. `opp_dragons`,
-   4. `elementaldrakes`,
-   5. `opp_elementaldrakes`,
-   6. `dragons (type unknown)`,
-   7. `elders`,
-   8. `opp_elders`,
-   9. `firstherald`,
-   10. `heralds`,
-   11. `opp_heralds`,
-   12. `void_grubs`,
-   13. `opp_void_grubs`,
-   14. `firstbaron`,
-   15. `barons`,
-   16. `opp_barons`,
-   17. `atakhans`,
-   18. `opp_atakhans`
- - to make missingness easier: `datacompleteness`, containing values: ['complete' 'partial']
- - to know if it is team data or single player data: `position`
- - to identify which side is the team on: `side`
+   1. `firstdragon`: did the team get the first elemental dragon, containing values: [0., 1.]
+   2. `dragons`: the total number of elemental drakes and elder the team killed, containing values: [0., 1., 2., 3., 4., 5., 6., 7.]
+   3. `opp_dragons`: the total number of elemental drakes and elder the opponent team killed, containing values: [0., 1., 2., 3., 4., 5., 6., 7.]
+   4. `elementaldrakes`: the total number of elemental drakes the team killed. Data is nan only when the data is considered 'partial'. Containing values: [0.,  1.,  2.,  3.,  4., nan]
+   5. `opp_elementaldrakes`: the total number of elemental drakes the opponent team killed. Data is nan only when the data is considered 'partial'. Containing values: [0.,  1.,  2.,  3.,  4., nan]
+   6. `dragons (type unknown)`: This column is special. It is not nan only when `datacompleteness` is 'partial'. This column represents the total number of elemental drakes the team killed, when the data is incomplete. We can also conclude that this column is probabily a main reason why `datacompleteness` is 'partial'. This column contains values: [0.,  1.,  2.,  3.,  4., nan]
+   7. `elders`: the total number of elders the team killed. Data is nan only when the data is considered 'partial'. Containing values: [0.,  1.,  2.,  3., nan]
+   8. `opp_elders`: the total number of elders the opponent team killed. Data is nan only when the data is considered 'partial'. Containing values: [0.,  1.,  2.,  3., nan]
+   9. `firstherald`: Whether the team takes the first herald or not. Data is nan only when `datacompleteness` is 'partial'. Containing values: [0., 1., nan]
+   10. `heralds`: The total number of heralds the team killed, containing values: [0., 1.]
+   11. `opp_heralds`: The total number of heralds the opponent team killed, containing values: [0., 1.]
+   12. `void_grubs`: The total number of void grubs killed by the team, containing values: [0., 1., 2., 3., 4., 5., 6.]
+   13. `opp_void_grubs`: The total number of void grubs killed by the opponent team, containing values: [0., 1., 2., 3., 4., 5., 6.]
+   14. `firstbaron`: Whether the team get the first Baron. Data is nan only when the data is considered 'partial'. Containing values: [0.,  1., nan]
+   15. `barons`: The total number of Barons killed by the team, containing values: [0., 1., 2., 3., 4.]
+   16. `opp_barons`: The total number of Barons killed by the opponent team, containing values: [0., 1., 2., 3., 4.]
+   17. `atakhans`: Did the team kill the Atakhan. Data is nan when the data is considered 'partial'. But it is also nan when both teams do not kill the atakhan for the whole game. Containing values: [0., 1., nan]
+   18. `opp_atakhans`: Did the opponent team kill the Atakhan. Data is nan when the data is considered 'partial'. But it is also nan when both teams do not kill the atakhan for the whole game. Containing values: [0., 1., nan]
+ - `datacompleteness`: is the data complete or not, containing values: ['complete', 'partial']
+ - `position`: 'team' for team data.
+ - `side`: which side this data was obtained from. Containing values: ['blue', 'red']
