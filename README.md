@@ -51,3 +51,15 @@ The head of the final dataset I will use looks like this:
 | LOLTMNT06_96134  | Red    | True               |             1 |         2 |             3 |                 2 |                     3 |        0 |            0 |         0 |             1 |            0 |                6 |            0 |        0 |            1 |          0 |              1 |        0 |
 | LOLTMNT06_95160  | Blue   | True               |             0 |         0 |             4 |                 0 |                     4 |        0 |            0 |         0 |             1 |            2 |                4 |            0 |        0 |            1 |          0 |              1 |        0 |
 ```
+
+# Data Analysis
+
+## Univariate Analysis
+
+By graphing out all the columns into histograms, it is confirmed that most columns contain reasonable values with reasonable distributions. For example, the graph of the 'dragons' column does seem to agree with the fact that the column is the sum of 'elementaldrakes' and 'elders', as seen below:
+<iframe
+  src="assets/dragons.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
