@@ -33,8 +33,8 @@ This dataset contains the information similar to the Results Screen after each g
 
 # Data Cleaning
 
-1. Extracted only the team data.
-2. Extracted only the columns listed above.
+1. Extracted only the team data. After sampling data frome the full dataset, I am able to confirm that team data are data with the 'position' column with the value 'team'. All other single player data have values such as 'top' or 'mid'. In addition, the other columns such as 'gold' or 'experience' all have significantly lower values for 'position' other than 'team'
+2. Extracted only the columns listed above. These are all the columns related to large neutral monsters. There are 7 more columns for all the elemental drakes but I have decided to drop them by the 5th step below.
 3. Looked closely at every column and verified their meanings as well as their possible values. The original dataset did not say what the columns represent. Some columns are related to other columns and their meanings can be interpreted by checking other columns. For example, the 'dragons' column is a column that holds numbers that are the sum of 'elementaldrakes' and 'elders', hence it must mean the sum of these two.
 4. Made sure there are no unexpected values other than some nan. There is only 1 Atakhan, 1 Herald, at most 6 void grubs, and at most 4 elemental drakes per team, per game. It is verified that there are no unreasonable values for any columns.
 5. Observed the reason why nan values are present. Most columns have nan when the data is partial, with the exception of 'dragons (type unknown)', which has nan when data is complete, and 'atakhans' and 'opp_atakhans' having extra nans when both teams did not kill the Atakhan. This step actually made me drop columns for different types of elemental drakes such as 'infernal' or 'ocean'. This is because 'dragons (type unknown)' was found to contain values of just elemental dragons, which means that if I were to fill in values for each elemental drake, I have to consider that there can only be 4 in total and made things wery hard to predict. This means that we lost data that we could have used, but since 'elementaldrakes' contained these information partially, we do not need to worry.
@@ -49,4 +49,3 @@ The final dataset we will use is the following:
 | LOLTMNT06_96134  | Red    | True               |             1 |         2 |             3 |                 2 |                     3 |        0 |            0 |         0 |             1 |            0 |                6 |            0 |        0 |            1 |          0 |              1 |        0 |
 | LOLTMNT06_95160  | Blue   | True               |             0 |         0 |             4 |                 0 |                     4 |        0 |            0 |         0 |             1 |            2 |                4 |            0 |        0 |            1 |          0 |              1 |        0 |
 ```
-Here
