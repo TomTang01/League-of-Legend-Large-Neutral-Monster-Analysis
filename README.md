@@ -335,7 +335,14 @@ This is a decent model given its high accuracy. We know from the Aggregates sect
 
 The final model would be a Random Forest using all the features of the large neutral monsters statistics. I choose Random Forest because it is more stable and hard to overfit. And since the Decision Tree Baseline Model gives a decent result, making it a forest would be a reasonable step.
 ```
-Features: `'firstdragon'`, `'elementaldrakes'`, `'opp_elementaldrakes'`, `'elders'`, `'opp_elders'`, `'heralds'`, `'opp_heralds'`, `'void_grubs'`, `'opp_void_grubs'`, `'firstbaron'`, `'barons'`, `'opp_barons'`, `'atakhans'`, and `'opp_atakhans'`
+Features: `'firstdragon'`, 
+`'elementaldrakes'`, `'opp_elementaldrakes'`, 
+`'elders'`, `'opp_elders'`, 
+`'heralds'`, `'opp_heralds'`, 
+`'void_grubs'`, `'opp_void_grubs'`, 
+`'firstbaron'`, 
+`'barons'`, `'opp_barons'`, 
+`'atakhans'`, and `'opp_atakhans'`
 ```
 
 `'void_grubs'` and `'opp_void_grubs'` will be binarized because, as stated in the data analysis phase, killing 1 or 0 Void Grub will not impact the final win in any way. And killing 2 or above is considered useful but there is no significant difference after 2.
